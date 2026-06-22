@@ -14,6 +14,11 @@ from ai_reviewer.config import EnvSettings, load_config
 app = typer.Typer(help="AI-powered code reviewer for GitHub Pull Requests")
 
 
+@app.callback()
+def main() -> None:
+    """AI-powered code reviewer for GitHub Pull Requests."""
+
+
 def _load_event_context(event_path: str) -> dict:
     with Path(event_path).open() as f:
         return json.load(f)
@@ -121,9 +126,5 @@ def review(
         raise typer.Exit(code=1)
 
 
-def main() -> None:
-    app()
-
-
 if __name__ == "__main__":
-    main()
+    app()
