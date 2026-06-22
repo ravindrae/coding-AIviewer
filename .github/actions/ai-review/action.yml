@@ -1,0 +1,44 @@
+name: AI Code Review
+description: Run AI-powered code review on pull requests
+
+inputs:
+  anthropic_api_key:
+    description: Anthropic API key
+    required: true
+  config_path:
+    description: Path to .reviewer.yml
+    required: false
+    default: .reviewer.yml
+  python_version:
+    description: Python version to use
+    required: false
+    default: "3.12"
+  dry_run:
+    description: Analyze only without posting comments
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install ai-reviewer
+      shell: bash
+      run: pip install .
+
+    - name: Run AI code review
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key }}
+        GITHUB_TOKEN: ${{ github.token }}
+        REVIEWER_CONFIG_PATH: ${{ inputs.config_path }}
+      run: |
+        ARGS=""
+        if [ "${{ inputs.dry_run }}" = "true" ]; then
+          ARGS="--dry-run"
+        fi
+        ai-reviewer review $ARGS

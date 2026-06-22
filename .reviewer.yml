@@ -1,0 +1,34 @@
+branches:
+  - main
+  - develop
+
+ignore:
+  paths:
+    - "**/*.lock"
+    - "dist/**"
+    - "**/*.min.js"
+    - "**/generated/**"
+    - "**/__pycache__/**"
+
+limits:
+  max_files: 25
+  max_lines_changed: 500
+  max_runtime_seconds: 55
+  max_concurrent_llm_calls: 5
+  max_hunks_per_call: 3
+
+model: claude-3-5-haiku-latest
+
+categories:
+  - security
+  - bug
+  - performance
+  - maintainability
+  - style
+
+severity_threshold: info
+
+fail_on: []
+
+summary:
+  include_pass_message: true
