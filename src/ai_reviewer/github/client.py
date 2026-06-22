@@ -30,11 +30,6 @@ class GitHubClient:
     async def __aexit__(self, *args: object) -> None:
         await self.close()
 
-    async def get_authenticated_user(self) -> dict[str, Any]:
-        resp = await self._client.get("/user")
-        resp.raise_for_status()
-        return resp.json()
-
     async def get_pull_request(self, pull_number: int) -> dict[str, Any]:
         resp = await self._client.get(f"/repos/{self.owner}/{self.repo}/pulls/{pull_number}")
         resp.raise_for_status()

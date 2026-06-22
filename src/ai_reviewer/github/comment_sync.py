@@ -43,9 +43,8 @@ def build_summary_body(result: ReviewResult, include_pass: bool = True) -> str:
 
 
 class CommentSync:
-    def __init__(self, client: GitHubClient, bot_user_id: int | None = None) -> None:
+    def __init__(self, client: GitHubClient) -> None:
         self.client = client
-        self.bot_user_id = bot_user_id
 
     async def sync(
         self,
@@ -54,23 +53,18 @@ class CommentSync:
         result: ReviewResult,
         include_pass_message: bool = True,
     ) -> None:
-        bot_id = self.bot_user_id
-        if bot_id is None:
-            user = await self.client.get_authenticated_user()
-            bot_id = user["id"]
-            self.bot_user_id = bot_id
-
-        await self._sync_inline_comments(pull_number, findings, bot_id)
+        await self._sync_inline_comments(pull_number, findings)
         await self._sync_summary(pull_number, result, include_pass_message)
 
     async def _sync_inline_comments(
         self,
         pull_number: int,
         findings: list[Finding],
-        bot_id: int,
     ) -> None:
         existing = await self.client.list_review_comments(pull_number)
-        bot_comments = [c for c in existing if c.get("user", {}).get("id") == bot_id]
+        bot_comments = [
+            c for c in existing if parse_inline_marker(c.get("body", "")) is not None
+        ]
 
         existing_by_id: dict[str, dict] = {}
         for comment in bot_comments:
